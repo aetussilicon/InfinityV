@@ -1,9 +1,11 @@
 package br.com.openumbrella.infinityv.api.controllers;
 
 import br.com.openumbrella.infinityv.api.model.users.DataAuth;
+import br.com.openumbrella.infinityv.api.model.users.DataLoginResponse;
 import br.com.openumbrella.infinityv.api.model.users.DataRegister;
 import br.com.openumbrella.infinityv.api.model.users.User;
 import br.com.openumbrella.infinityv.api.repositories.UserRepository;
+import br.com.openumbrella.infinityv.api.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AutheticationController {
 
     @Autowired
+    private TokenService tokenService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -30,7 +35,9 @@ public class AutheticationController {
         var usernamePasswd = new UsernamePasswordAuthenticationToken(dataAuth.email(), dataAuth.password());
         var auth = this.authenticationManager.authenticate(usernamePasswd);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateTokem((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new DataLoginResponse(token));
     }
 
     @PostMapping("/register")
