@@ -20,6 +20,8 @@ public class SecurityConfiguration {
 
     @Autowired
     SecurityFilter securityFilter;
+
+    // Configura as regras de segurança para a aplicação
     @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
          return httpSecurity
@@ -34,11 +36,13 @@ public class SecurityConfiguration {
                  .build();
      }
 
+    // Configura o gerenciador de autenticação
      @Bean
      public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
      }
 
+    // Configura o encoder de senhas
      @Bean
      public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

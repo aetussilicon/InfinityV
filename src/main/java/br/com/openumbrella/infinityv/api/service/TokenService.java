@@ -17,9 +17,12 @@ public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
-    public String generateTokem(User user){
+
+    // Gera um token JWT com base nas informações do usuário
+    public String generateToken(User user){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            // Cria o token com emissor, assunto e data de expiração
             String token = JWT.create()
                     .withIssuer("infinityv-api")
                     .withSubject(user.getEmail())
@@ -32,6 +35,7 @@ public class TokenService {
         }
     }
 
+    // Valida um token JWT e retorna o email do usuário associado
     public String validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -41,11 +45,12 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception){
-            return "";
+            return ""; // Retorna uma string vazia em caso de verificação inválida
 
         }
     }
 
+    // Calcula a data de expiração do token (2 horas a partir do momento atual)
     private Instant getExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }

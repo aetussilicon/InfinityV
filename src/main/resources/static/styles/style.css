@@ -3,6 +3,7 @@
 body{
     background-color: #32082a;
     font-family: 'Fira Sans', 'sans-serif'; 
+    overflow: hidden;
 }
 
 .login-area{

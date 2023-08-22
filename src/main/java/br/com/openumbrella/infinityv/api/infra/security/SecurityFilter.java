@@ -21,21 +21,26 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     TokenService tokenService;
 
+    // Filtra as requisições para autenticação e autorização
     @Autowired
     UserRepository userRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // Valida o token e obtém as informações de login
         var token = this.recoverToken(request);
+        // Encontra os detalhes do usuário a partir do repositório
         if (token !=null){
             var login = tokenService.validateToken(token);
             UserDetails user = userRepository.findByEmail(login);
 
+            // Cria uma autenticação baseada nas informações do usuário
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
+    // Recupera o token do cabeçalho da requisição
     private String recoverToken(HttpServletRequest request){
         var authHeader = request.getHeader("Autorization");
         if (authHeader == null) return null;

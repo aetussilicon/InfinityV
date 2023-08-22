@@ -32,18 +32,24 @@ public class AutheticationController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid DataAuth dataAuth){
+
+        // Autenticação baseada em email e senha
         var usernamePasswd = new UsernamePasswordAuthenticationToken(dataAuth.email(), dataAuth.password());
         var auth = this.authenticationManager.authenticate(usernamePasswd);
 
-        var token = tokenService.generateTokem((User) auth.getPrincipal());
+        // Gera token JWT e o retorna
+        var token = tokenService.generateToken((User) auth.getPrincipal());
 
         return ResponseEntity.ok(new DataLoginResponse(token));
     }
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid DataRegister dataRegister){
+
+        //Verifica se o email já está registrado
         if(this.userRepository.findByEmail(dataRegister.email()) != null) return ResponseEntity.badRequest().build();
 
+        //Encriptação da senha
         String encryptedPasswd = new BCryptPasswordEncoder().encode(dataRegister.password());
         User newUser = new User(dataRegister.email(), dataRegister.username(), encryptedPasswd);
 
